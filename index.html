@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>MTL Lab Inventory</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#2C7A7B">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="MTL Inventory">
+  <link rel="apple-touch-icon" href="icons/icon-192.png">
+  <link rel="icon" type="image/png" href="icons/icon-192.png">
+</head>
+<body>
+  <div class="app-wrapper">
+    <!-- Phone Frame -->
+    <div class="phone-frame" id="phoneFrame">
+
+      <!-- Hidden file input for Import -->
+      <input type="file" id="importFileInput" accept=".json,application/json" style="display:none;" onchange="handleImportFile(event)">
+
+      <!-- ============ SCREEN: SEARCH ============ -->
+      <div class="screen screen--search active" id="screenSearch">
+        <div class="status-bar">
+          <span class="status-time">9:41</span>
+          <div class="status-icons">
+            <svg width="17" height="11" viewBox="0 0 17 11" fill="none"><rect x="0" y="7" width="3" height="4" rx="0.5" fill="#0F1F2E"/><rect x="4.5" y="5" width="3" height="6" rx="0.5" fill="#0F1F2E"/><rect x="9" y="2.5" width="3" height="8.5" rx="0.5" fill="#0F1F2E"/><rect x="13.5" y="0" width="3" height="11" rx="0.5" fill="#0F1F2E"/></svg>
+            <svg width="15" height="11" viewBox="0 0 15 11" fill="none"><path d="M7.5 0C4.5 0 1.8 1.1 0 2.9L1.4 4.3C2.9 2.9 5.1 2 7.5 2C9.9 2 12.1 2.9 13.6 4.3L15 2.9C13.2 1.1 10.5 0 7.5 0Z" fill="#0F1F2E"/><path d="M7.5 3.5C5.7 3.5 4 4.2 2.8 5.4L4.2 6.8C5 6 6.2 5.5 7.5 5.5C8.8 5.5 10 6 10.8 6.8L12.2 5.4C11 4.2 9.3 3.5 7.5 3.5Z" fill="#0F1F2E"/><circle cx="7.5" cy="9" r="2" fill="#0F1F2E"/></svg>
+            <svg width="25" height="11" viewBox="0 0 25 11" fill="none"><rect x="0.5" y="0.5" width="21" height="10" rx="2" stroke="#0F1F2E" fill="none"/><rect x="2" y="2" width="18" height="7" rx="1" fill="#0F1F2E"/><rect x="22.5" y="3.5" width="1.5" height="4" rx="0.5" fill="#0F1F2E"/></svg>
+          </div>
+        </div>
+
+        <div class="content-area content-area--scroll">
+          <div class="page-header">
+            <h1 class="page-title">MTL Lab Inventory</h1>
+            <p class="page-subtitle" id="searchSubtitle">256 items · 2 labs · 45 categories</p>
+          </div>
+
+          <div class="search-bar">
+            <div class="search-input">
+              <svg class="search-icon" width="18" height="18" viewBox="0 0 18 18" fill="none"><circle cx="8" cy="8" r="6" stroke="#5C7480" stroke-width="1.5"/><path d="M12.5 12.5L16 16" stroke="#5C7480" stroke-width="1.5" stroke-linecap="round"/></svg>
+              <input type="text" id="searchInput" placeholder="Search items, categories, locations..." autocomplete="off">
+            </div>
+          </div>
+
+          <div class="filter-chips" id="filterChips">
+            <button class="chip chip--active" data-filter="all">All</button>
+            <button class="chip" data-filter="Small lab">Small Lab</button>
+            <button class="chip" data-filter="Large lab">Large Lab</button>
+            <button class="chip" data-filter="*Consumables">Consumables</button>
+          </div>
+
+          <div class="item-list" id="itemList"></div>
+        </div>
+
+        <div class="tab-bar" id="tabBarSearch"></div>
+      </div>
+
+      <!-- ============ SCREEN: DETAIL ============ -->
+      <div class="screen screen--detail" id="screenDetail">
+        <div class="status-bar">
+          <span class="status-time">9:41</span>
+          <div class="status-icons">
+            <svg width="17" height="11" viewBox="0 0 17 11" fill="none"><rect x="0" y="7" width="3" height="4" rx="0.5" fill="#0F1F2E"/><rect x="4.5" y="5" width="3" height="6" rx="0.5" fill="#0F1F2E"/><rect x="9" y="2.5" width="3" height="8.5" rx="0.5" fill="#0F1F2E"/><rect x="13.5" y="0" width="3" height="11" rx="0.5" fill="#0F1F2E"/></svg>
+            <svg width="15" height="11" viewBox="0 0 15 11" fill="none"><path d="M7.5 0C4.5 0 1.8 1.1 0 2.9L1.4 4.3C2.9 2.9 5.1 2 7.5 2C9.9 2 12.1 2.9 13.6 4.3L15 2.9C13.2 1.1 10.5 0 7.5 0Z" fill="#0F1F2E"/><path d="M7.5 3.5C5.7 3.5 4 4.2 2.8 5.4L4.2 6.8C5 6 6.2 5.5 7.5 5.5C8.8 5.5 10 6 10.8 6.8L12.2 5.4C11 4.2 9.3 3.5 7.5 3.5Z" fill="#0F1F2E"/><circle cx="7.5" cy="9" r="2" fill="#0F1F2E"/></svg>
+            <svg width="25" height="11" viewBox="0 0 25 11" fill="none"><rect x="0.5" y="0.5" width="21" height="10" rx="2" stroke="#0F1F2E" fill="none"/><rect x="2" y="2" width="18" height="7" rx="1" fill="#0F1F2E"/><rect x="22.5" y="3.5" width="1.5" height="4" rx="0.5" fill="#0F1F2E"/></svg>
+          </div>
+        </div>
+
+        <div class="nav-bar">
+          <button class="back-btn" onclick="goBack()">
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M12 4L6 10L12 16" stroke="#0F1F2E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            <span>Search</span>
+          </button>
+          <span class="nav-item-id" id="detailItemId">SL-0019</span>
+        </div>
+
+        <div class="content-area content-area--scroll" id="detailContent"></div>
+        <div class="tab-bar" id="tabBarDetail"></div>
+      </div>
+
+      <!-- ============ SCREEN: DASHBOARD ============ -->
+      <div class="screen screen--dashboard" id="screenDashboard">
+        <div class="status-bar">
+          <span class="status-time">9:41</span>
+          <div class="status-icons">
+            <svg width="17" height="11" viewBox="0 0 17 11" fill="none"><rect x="0" y="7" width="3" height="4" rx="0.5" fill="#0F1F2E"/><rect x="4.5" y="5" width="3" height="6" rx="0.5" fill="#0F1F2E"/><rect x="9" y="2.5" width="3" height="8.5" rx="0.5" fill="#0F1F2E"/><rect x="13.5" y="0" width="3" height="11" rx="0.5" fill="#0F1F2E"/></svg>
+            <svg width="15" height="11" viewBox="0 0 15 11" fill="none"><path d="M7.5 0C4.5 0 1.8 1.1 0 2.9L1.4 4.3C2.9 2.9 5.1 2 7.5 2C9.9 2 12.1 2.9 13.6 4.3L15 2.9C13.2 1.1 10.5 0 7.5 0Z" fill="#0F1F2E"/><path d="M7.5 3.5C5.7 3.5 4 4.2 2.8 5.4L4.2 6.8C5 6 6.2 5.5 7.5 5.5C8.8 5.5 10 6 10.8 6.8L12.2 5.4C11 4.2 9.3 3.5 7.5 3.5Z" fill="#0F1F2E"/><circle cx="7.5" cy="9" r="2" fill="#0F1F2E"/></svg>
+            <svg width="25" height="11" viewBox="0 0 25 11" fill="none"><rect x="0.5" y="0.5" width="21" height="10" rx="2" stroke="#0F1F2E" fill="none"/><rect x="2" y="2" width="18" height="7" rx="1" fill="#0F1F2E"/><rect x="22.5" y="3.5" width="1.5" height="4" rx="0.5" fill="#0F1F2E"/></svg>
+          </div>
+        </div>
+
+        <div class="content-area content-area--scroll">
+          <div class="page-header">
+            <h1 class="page-title">Dashboard</h1>
+            <p class="page-subtitle">Inventory overview · Updated today</p>
+          </div>
+          <div class="dashboard-scroll" id="dashboardContent"></div>
+        </div>
+        <div class="tab-bar" id="tabBarDashboard"></div>
+      </div>
+
+      <!-- ============ SCREEN: EDIT ============ -->
+      <div class="screen screen--edit" id="screenEdit">
+        <div class="status-bar">
+          <span class="status-time">9:41</span>
+          <div class="status-icons">
+            <svg width="17" height="11" viewBox="0 0 17 11" fill="none"><rect x="0" y="7" width="3" height="4" rx="0.5" fill="#0F1F2E"/><rect x="4.5" y="5" width="3" height="6" rx="0.5" fill="#0F1F2E"/><rect x="9" y="2.5" width="3" height="8.5" rx="0.5" fill="#0F1F2E"/><rect x="13.5" y="0" width="3" height="11" rx="0.5" fill="#0F1F2E"/></svg>
+            <svg width="15" height="11" viewBox="0 0 15 11" fill="none"><path d="M7.5 0C4.5 0 1.8 1.1 0 2.9L1.4 4.3C2.9 2.9 5.1 2 7.5 2C9.9 2 12.1 2.9 13.6 4.3L15 2.9C13.2 1.1 10.5 0 7.5 0Z" fill="#0F1F2E"/><path d="M7.5 3.5C5.7 3.5 4 4.2 2.8 5.4L4.2 6.8C5 6 6.2 5.5 7.5 5.5C8.8 5.5 10 6 10.8 6.8L12.2 5.4C11 4.2 9.3 3.5 7.5 3.5Z" fill="#0F1F2E"/><circle cx="7.5" cy="9" r="2" fill="#0F1F2E"/></svg>
+            <svg width="25" height="11" viewBox="0 0 25 11" fill="none"><rect x="0.5" y="0.5" width="21" height="10" rx="2" stroke="#0F1F2E" fill="none"/><rect x="2" y="2" width="18" height="7" rx="1" fill="#0F1F2E"/><rect x="22.5" y="3.5" width="1.5" height="4" rx="0.5" fill="#0F1F2E"/></svg>
+          </div>
+        </div>
+        <div class="nav-bar">
+          <button class="back-btn" id="editBackBtn">
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M12 4L6 10L12 16" stroke="#0F1F2E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            <span>Detail</span>
+          </button>
+          <span class="nav-item-id" id="editItemId">Edit Item</span>
+        </div>
+        <div class="content-area content-area--scroll">
+          <div class="page-header">
+            <h1 class="page-title" id="editTitle">Edit Equipment</h1>
+            <p class="page-subtitle">Modify item information</p>
+          </div>
+          <div class="add-form" id="editForm"></div>
+        </div>
+      </div>
+
+      <!-- ============ SCREEN: ADD ============ -->
+      <div class="screen screen--add" id="screenAdd">
+        <div class="status-bar">
+          <span class="status-time">9:41</span>
+          <div class="status-icons">
+            <svg width="17" height="11" viewBox="0 0 17 11" fill="none"><rect x="0" y="7" width="3" height="4" rx="0.5" fill="#0F1F2E"/><rect x="4.5" y="5" width="3" height="6" rx="0.5" fill="#0F1F2E"/><rect x="9" y="2.5" width="3" height="8.5" rx="0.5" fill="#0F1F2E"/><rect x="13.5" y="0" width="3" height="11" rx="0.5" fill="#0F1F2E"/></svg>
+            <svg width="15" height="11" viewBox="0 0 15 11" fill="none"><path d="M7.5 0C4.5 0 1.8 1.1 0 2.9L1.4 4.3C2.9 2.9 5.1 2 7.5 2C9.9 2 12.1 2.9 13.6 4.3L15 2.9C13.2 1.1 10.5 0 7.5 0Z" fill="#0F1F2E"/><path d="M7.5 3.5C5.7 3.5 4 4.2 2.8 5.4L4.2 6.8C5 6 6.2 5.5 7.5 5.5C8.8 5.5 10 6 10.8 6.8L12.2 5.4C11 4.2 9.3 3.5 7.5 3.5Z" fill="#0F1F2E"/><circle cx="7.5" cy="9" r="2" fill="#0F1F2E"/></svg>
+            <svg width="25" height="11" viewBox="0 0 25 11" fill="none"><rect x="0.5" y="0.5" width="21" height="10" rx="2" stroke="#0F1F2E" fill="none"/><rect x="2" y="2" width="18" height="7" rx="1" fill="#0F1F2E"/><rect x="22.5" y="3.5" width="1.5" height="4" rx="0.5" fill="#0F1F2E"/></svg>
+          </div>
+        </div>
+        <div class="content-area content-area--scroll">
+          <div class="page-header">
+            <h1 class="page-title">Add Equipment</h1>
+            <p class="page-subtitle">Register a new inventory item</p>
+          </div>
+          <div class="add-form" id="addForm"></div>
+        </div>
+        <div class="tab-bar" id="tabBarAdd"></div>
+      </div>
+
+      <!-- ============ SCREEN: MAP ============ -->
+      <div class="screen screen--map" id="screenMap">
+        <div class="status-bar">
+          <span class="status-time">9:41</span>
+          <div class="status-icons">
+            <svg width="17" height="11" viewBox="0 0 17 11" fill="none"><rect x="0" y="7" width="3" height="4" rx="0.5" fill="#0F1F2E"/><rect x="4.5" y="5" width="3" height="6" rx="0.5" fill="#0F1F2E"/><rect x="9" y="2.5" width="3" height="8.5" rx="0.5" fill="#0F1F2E"/><rect x="13.5" y="0" width="3" height="11" rx="0.5" fill="#0F1F2E"/></svg>
+            <svg width="15" height="11" viewBox="0 0 15 11" fill="none"><path d="M7.5 0C4.5 0 1.8 1.1 0 2.9L1.4 4.3C2.9 2.9 5.1 2 7.5 2C9.9 2 12.1 2.9 13.6 4.3L15 2.9C13.2 1.1 10.5 0 7.5 0Z" fill="#0F1F2E"/><path d="M7.5 3.5C5.7 3.5 4 4.2 2.8 5.4L4.2 6.8C5 6 6.2 5.5 7.5 5.5C8.8 5.5 10 6 10.8 6.8L12.2 5.4C11 4.2 9.3 3.5 7.5 3.5Z" fill="#0F1F2E"/><circle cx="7.5" cy="9" r="2" fill="#0F1F2E"/></svg>
+            <svg width="25" height="11" viewBox="0 0 25 11" fill="none"><rect x="0.5" y="0.5" width="21" height="10" rx="2" stroke="#0F1F2E" fill="none"/><rect x="2" y="2" width="18" height="7" rx="1" fill="#0F1F2E"/><rect x="22.5" y="3.5" width="1.5" height="4" rx="0.5" fill="#0F1F2E"/></svg>
+          </div>
+        </div>
+        <div class="nav-bar">
+          <button class="back-btn" id="mapBackBtn">
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M12 4L6 10L12 16" stroke="#0F1F2E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            <span id="mapBackLabel">Detail</span>
+          </button>
+          <span class="nav-item-id" id="mapLocationId">Location</span>
+        </div>
+        <div class="content-area content-area--scroll" id="mapContent"></div>
+      </div>
+
+      <!-- ============ SCREEN: LAB FLOOR PLAN ============ -->
+      <div class="screen screen--map" id="screenFloorPlan">
+        <div class="status-bar">
+          <span class="status-time">9:41</span>
+          <div class="status-icons">
+            <svg width="17" height="11" viewBox="0 0 17 11" fill="none"><rect x="0" y="7" width="3" height="4" rx="0.5" fill="#0F1F2E"/><rect x="4.5" y="5" width="3" height="6" rx="0.5" fill="#0F1F2E"/><rect x="9" y="2.5" width="3" height="8.5" rx="0.5" fill="#0F1F2E"/><rect x="13.5" y="0" width="3" height="11" rx="0.5" fill="#0F1F2E"/></svg>
+            <svg width="15" height="11" viewBox="0 0 15 11" fill="none"><path d="M7.5 0C4.5 0 1.8 1.1 0 2.9L1.4 4.3C2.9 2.9 5.1 2 7.5 2C9.9 2 12.1 2.9 13.6 4.3L15 2.9C13.2 1.1 10.5 0 7.5 0Z" fill="#0F1F2E"/><path d="M7.5 3.5C5.7 3.5 4 4.2 2.8 5.4L4.2 6.8C5 6 6.2 5.5 7.5 5.5C8.8 5.5 10 6 10.8 6.8L12.2 5.4C11 4.2 9.3 3.5 7.5 3.5Z" fill="#0F1F2E"/><circle cx="7.5" cy="9" r="2" fill="#0F1F2E"/></svg>
+            <svg width="25" height="11" viewBox="0 0 25 11" fill="none"><rect x="0.5" y="0.5" width="21" height="10" rx="2" stroke="#0F1F2E" fill="none"/><rect x="2" y="2" width="18" height="7" rx="1" fill="#0F1F2E"/><rect x="22.5" y="3.5" width="1.5" height="4" rx="0.5" fill="#0F1F2E"/></svg>
+          </div>
+        </div>
+        <div class="nav-bar">
+          <button class="back-btn" id="floorPlanBackBtn">
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M12 4L6 10L12 16" stroke="#0F1F2E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            <span id="floorPlanBackLabel">Dashboard</span>
+          </button>
+          <span class="nav-item-id" id="floorPlanLabId">Small Lab</span>
+        </div>
+        <div class="content-area content-area--scroll" id="floorPlanContent"></div>
+      </div>
+
+      <!-- ============ SCREEN: SETTINGS ============ -->
+      <div class="screen screen--settings" id="screenSettings">
+        <div class="status-bar">
+          <span class="status-time">9:41</span>
+          <div class="status-icons">
+            <svg width="17" height="11" viewBox="0 0 17 11" fill="none"><rect x="0" y="7" width="3" height="4" rx="0.5" fill="#0F1F2E"/><rect x="4.5" y="5" width="3" height="6" rx="0.5" fill="#0F1F2E"/><rect x="9" y="2.5" width="3" height="8.5" rx="0.5" fill="#0F1F2E"/><rect x="13.5" y="0" width="3" height="11" rx="0.5" fill="#0F1F2E"/></svg>
+            <svg width="15" height="11" viewBox="0 0 15 11" fill="none"><path d="M7.5 0C4.5 0 1.8 1.1 0 2.9L1.4 4.3C2.9 2.9 5.1 2 7.5 2C9.9 2 12.1 2.9 13.6 4.3L15 2.9C13.2 1.1 10.5 0 7.5 0Z" fill="#0F1F2E"/><path d="M7.5 3.5C5.7 3.5 4 4.2 2.8 5.4L4.2 6.8C5 6 6.2 5.5 7.5 5.5C8.8 5.5 10 6 10.8 6.8L12.2 5.4C11 4.2 9.3 3.5 7.5 3.5Z" fill="#0F1F2E"/><circle cx="7.5" cy="9" r="2" fill="#0F1F2E"/></svg>
+            <svg width="25" height="11" viewBox="0 0 25 11" fill="none"><rect x="0.5" y="0.5" width="21" height="10" rx="2" stroke="#0F1F2E" fill="none"/><rect x="2" y="2" width="18" height="7" rx="1" fill="#0F1F2E"/><rect x="22.5" y="3.5" width="1.5" height="4" rx="0.5" fill="#0F1F2E"/></svg>
+          </div>
+        </div>
+        <div class="content-area content-area--scroll">
+          <div class="page-header">
+            <h1 class="page-title">Settings</h1>
+            <p class="page-subtitle">App preferences</p>
+          </div>
+          <div class="settings-list" id="settingsList"></div>
+        </div>
+        <div class="tab-bar" id="tabBarSettings"></div>
+      </div>
+
+      <!-- MBG Logo (fixed top-right, beside the page title) -->
+      <img class="mbg-logo" src="MBG Logo.png" alt="MBG">
+
+    </div>
+
+    <!-- Toast -->
+    <div class="toast" id="toast"></div>
+
+    <!-- Confirm Overlay -->
+    <div class="confirm-overlay" id="confirmOverlay">
+      <div class="confirm-dialog">
+        <div class="confirm-title" id="confirmTitle">Confirm</div>
+        <div class="confirm-msg" id="confirmMsg">Are you sure?</div>
+        <div class="confirm-actions">
+          <button class="confirm-cancel" id="confirmCancel">Cancel</button>
+          <button class="confirm-ok" id="confirmOk">Delete</button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+  <script src="js/data.js"></script>
+  <script src="js/firebase-config.js"></script>
+  <script src="js/app.js"></script>
+  <script>
+    // Register Service Worker for PWA offline support
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./service-worker.js')
+          .then(reg => console.log('SW registered:', reg.scope))
+          .catch(err => console.log('SW registration failed:', err));
+      });
+    }
+  </script>
+</body>
+</html>
